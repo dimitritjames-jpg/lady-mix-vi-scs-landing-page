@@ -48,3 +48,14 @@
 - [ ] DNS connected (if using custom domain)
 - [ ] SSL active
 - [ ] Final live URL checked on desktop and mobile
+
+## Final runtime QA (2026-06-27)
+
+- **Latest QA date:** 2026-06-27
+- **Latest commit checked:** `28fbfb9`
+- **Live production URL:** https://lady-mix-vi-scs-build.vercel.app/
+- **Deployment status:** `x-vercel-id=iad1::4gmnq-1782575066490-95cfc099e197` (HTTP 200 from live URL, cache HIT)
+- **Local dev boot:** `npm run dev` starts successfully on `127.0.0.1:3000` and serves `/` with HTTP 200.
+- **Runtime QA result:** ✅ Completed core checks (server start, home load, required anchors/sections present, form POST hits `/api/booking` with 503 fallback path when `RESEND_API_KEY` unset).
+- **Booking flow result:** ✅ Form endpoint and fallback are wired; when API key is missing, 503 response indicates fallback to prefilled `mailto` should be used.
+- **Remaining issues:** No functional code blockers. `Island Girls Love R&B` text is validated in JS source and rendered in nav/controls, but not explicitly surfaced as literal marker in server response HTML. Final visual QA for desktop/mobile interactions is still expected to be performed in browser for human confirmation.

@@ -399,7 +399,7 @@ a:focus-visible {
   background: var(--art);
 }
 
-.media-card img {
+.media-card-image {
   position: absolute;
   inset: 0;
   width: 100%;

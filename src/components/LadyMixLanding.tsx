@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useMemo, useState } from "react";
 import { bookingChips, bookingDetails, floatingMedia, LADY_MIX_EMAIL } from "../data/site";
 
@@ -180,7 +181,16 @@ export default function LadyMixLanding() {
             <article key={card.className} className={`media-card ${card.className}`}>
               <span>{card.eyebrow}</span>
               <strong>{card.title}</strong>
-              {card.mediaSrc ? <img src={card.mediaSrc} alt="" aria-hidden="true" /> : null}
+              {card.mediaSrc ? (
+                <Image
+                  src={card.mediaSrc}
+                  alt=""
+                  fill
+                  aria-hidden="true"
+                  className="media-card-image"
+                  sizes="(min-width: 1100px) 220px, 0px"
+                />
+              ) : null}
             </article>
           ))}
         </div>
