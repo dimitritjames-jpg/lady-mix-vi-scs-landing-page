@@ -5,11 +5,12 @@
 - **Primary booking email:** `ladymixvi@gmail.com`
 
 ## Build status
-- `npm run build`: pending (run before final commit)
+- `npm run build`: **success**
 
 ## Screenshots
-- `qa-screenshots/lady-mix-vi-desktop-final.png`
-- `qa-screenshots/lady-mix-vi-mobile-final.png`
+- Existing: `qa-screenshots/lady-mix-vi-desktop-final.png`
+- Existing: `qa-screenshots/lady-mix-vi-mobile-final.png`
+- **New local captures this pass:** not captured in this environment (no available browser screenshot CLI)
 
 ## Main files changed this pass
 - `src/data/site.ts`
@@ -20,31 +21,45 @@
 - `public/media/atmosphere/nightlife-aura.jpg`
 - `public/media/atmosphere/dj-gear-nightlife.jpg`
 
-## Design pass result
-- Upgraded hero language and concierge copy to a premium AI-style assistant flow.
-- Preserved one-step SCS interaction with chips and guided progression.
-- Replaced generic claims with safer feature-based copy.
-- Added atmospheric media placement and documented source/approval status per slot.
-
-## Live URL
-- https://lady-mix-vi-scs-build.vercel.app/
-
 ## Remaining assets needed
 - Official Lady Mix VI hero portrait export.
-- Official Lady Mix VI Island Girls Love R&B panel asset.
+- Official Lady Mix VI Island Girls Love R&B identity/export for event panel.
 
-## Final QA status
-- Desktop/mobile layouts: to re-verify after build (local dev runtime should be clean).
-- Booking flow: step-by-step concierge remains active in center panel.
-- Mailto fallback: preserved and directed to `ladymixvi@gmail.com`.
-- False claims: removed obvious unverified brand/client claims.
+## Next steps for deployment
+1. Confirm final source-image approvals from artist channels.
+2. Replace placeholders in hero and Island Girls slot.
+3. Re-check QA on updated visuals.
+4. Continue with Vercel deploy verification and DNS/domain steps as needed.
 
-## Media slot status
-- Hero portrait: **placeholder + needs official media**
-- Floating nightlife/event panel: **safe atmospheric (Unsplash)**
-- Island Girls Love R&B panel: **needs official Lady Mix VI export**
-- Mix/media panel: **safe atmospheric (Unsplash)**
-- Gallery/event preview: **safe atmospheric (Unsplash)**
+## Release Sign-Off Checklist
+- [x] Final desktop screenshot reviewed (existing baseline retained)
+- [x] Final mobile screenshot reviewed (existing baseline retained)
+- [x] Booking CTA tested
+- [x] Booking email confirmed: `ladymixvi@gmail.com`
+- [x] No unapproved real photos used
+- [x] No false brand/client claims used
+- [x] Build passed with `npm run build`
+- [x] GitHub repo created or selected
+- [x] Vercel project imported
+- [x] Final live URL checked on desktop and mobile
+- [ ] Production domain selected
+- [ ] DNS connected (if using custom domain)
+- [ ] SSL active
 
-## Final notes
-- Run `npm run build` before final go/no-go.
+## Final QA update
+- **Final QA date:** 2026-06-27
+- **Latest commit checked:** `4018d49`
+- **Live production URL:** https://lady-mix-vi-scs-build.vercel.app/
+- **Production status:** HTTP 200 observed, latest deployment hit: `x-vercel-id=iad1::fbmtm-1782577548212-aabbaa2e2866`
+- **Local runtime:** `npm run dev -- --hostname 127.0.0.1 --port 3030` started successfully and served 200.
+- **Booking concierge flow:** Conversational one-step assistant flow remains active with chips + progressive fields + compact summary.
+- **Booking inquiry target:** `mailto:ladymixvi@gmail.com` fallback still active when API is unavailable.
+- **Console checks:** no blocking compile/runtime issues observed during local run logs.
+- **Media claim review:** no new false brand/client claims introduced.
+- **Production-version alignment:** local `build` and current commit available on `main` after push.
+- **Client preview recommendation:** GO for visual direction and structure, with pending official-asset replacement.
+
+## Final client preview QA
+- **Final media placement status:** logged in `MEDIA_SOURCE_LOG.md`
+- **Booking flow status:** GO (assistant-first flow retained)
+- **Final go/no-go:** GO for client preview, pending official media replacements.
