@@ -14,7 +14,7 @@ export const bookingChips = [
   { label: "Weddings", icon: "✦" },
   { label: "Private Parties", icon: "🎧" },
   { label: "Corporate Events", icon: "🏢" },
-  { label: "Island Girls Love R&B", icon: "♀" },
+  { label: "R&B Night Sessions", icon: "♀" },
   { label: "View Mixes", icon: "▶" },
   { label: "Check Availability", icon: "✓" },
 ];
@@ -22,8 +22,8 @@ export const bookingChips = [
 export const floatingMedia: FloatingMediaCard[] = [
   {
     className: "sunset",
-    title: "Nightlife Atmosphere",
-    eyebrow: "Editorial cinematic panel",
+    title: "Nightside Energy",
+    eyebrow: "VI nightlife",
     source:
       "https://images.unsplash.com/photo-1764510378335-865951ed4539?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400",
     mediaSrc: "/media/atmosphere/nightlife-aura.jpg",
@@ -32,8 +32,8 @@ export const floatingMedia: FloatingMediaCard[] = [
   },
   {
     className: "friends",
-    title: "Island Glow",
-    eyebrow: "Private event mood",
+    title: "Private Event Energy",
+    eyebrow: "Elegant receptions",
     source:
       "https://images.unsplash.com/photo-1761426202777-520917882f0a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400",
     mediaSrc: "/media/atmosphere/dj-gear-nightlife.jpg",
@@ -42,8 +42,8 @@ export const floatingMedia: FloatingMediaCard[] = [
   },
   {
     className: "rb",
-    title: "Island Girls Love R&B",
-    eyebrow: "Series identity placeholder",
+    title: "R&B Night Sessions",
+    eyebrow: "Curated momentum",
     source: "https://www.instagram.com/ladymixvi/",
     mediaSrc: null,
     sourceType: "official-lady-mix",
@@ -51,8 +51,8 @@ export const floatingMedia: FloatingMediaCard[] = [
   },
   {
     className: "crowd",
-    title: "Island Girls Love R&B",
-    eyebrow: "Mix energy panel",
+    title: "Crowd Energy",
+    eyebrow: "Event atmosphere",
     source:
       "https://images.unsplash.com/photo-1764510378335-865951ed4539?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400",
     mediaSrc: "/media/atmosphere/nightlife-aura.jpg",
@@ -61,8 +61,8 @@ export const floatingMedia: FloatingMediaCard[] = [
   },
   {
     className: "mixer",
-    title: "Precision Mixes",
-    eyebrow: "Audio-first moments",
+    title: "Premium Mix Works",
+    eyebrow: "Sound design in motion",
     source:
       "https://images.unsplash.com/photo-1761426202777-520917882f0a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400",
     mediaSrc: "/media/atmosphere/dj-gear-nightlife.jpg",
@@ -80,8 +80,8 @@ export const floatingMedia: FloatingMediaCard[] = [
   },
   {
     className: "brunch",
-    title: "Gallery / Event Preview",
-    eyebrow: "Curated nights",
+    title: "Gallery Highlights",
+    eyebrow: "Showcase moments",
     source:
       "https://images.unsplash.com/photo-1764510378335-865951ed4539?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400",
     mediaSrc: "/media/atmosphere/nightlife-aura.jpg",

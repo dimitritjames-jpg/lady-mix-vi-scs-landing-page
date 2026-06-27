@@ -111,7 +111,7 @@ function detectEventType(raw: string) {
   if (normalized.includes("wedding")) return "Weddings";
   if (normalized.includes("private")) return "Private Parties";
   if (normalized.includes("corporate")) return "Corporate Events";
-  if (normalized.includes("love r&b") || normalized.includes("island girls")) return "Island Girls Love R&B";
+  if (normalized.includes("love r&b") || normalized.includes("island girls")) return "R&B Night Sessions";
   if (normalized.includes("mix")) return "View Mixes";
   if (normalized.includes("availability") || normalized.includes("check")) return "Check Availability";
   return "";
@@ -527,14 +527,14 @@ export default function LadyMixLanding() {
       </section>
 
       <section className="proof-strip" id="gallery" aria-label="Feature strip">
-        <p>VI Based. Event Ready.</p>
+        <p>Built for private events, brand nights, and unforgettable VI parties</p>
         {[
-          "Island Nights",
-          "R&B / Wedding-ready energy",
-          "Private villas",
+          "R&B nights",
+          "Wedding receptions",
+          "Private villas and retreats",
           "Destination events",
-          "Corporate launches",
-          "Girls' night elevated",
+          "Brand nights",
+          "Nightlife moments",
         ].map((label) => (
           <span key={label}>{label}</span>
         ))}
@@ -551,7 +551,7 @@ export default function LadyMixLanding() {
               <strong>Weddings in motion</strong>
             </div>
             <div>
-              <strong>Island Girls Love R&amp;B</strong>
+              <strong>R&B Night Sessions</strong>
             </div>
             <div>
               <strong>Corporate and destination receptions</strong>
@@ -571,7 +571,7 @@ export default function LadyMixLanding() {
             </button>
             <div className="wave" />
             <div>
-              <strong>Island Girls Love R&amp;B</strong>
+              <strong>R&B Night Sessions</strong>
               <p>Dark, warm, and dance-floor ready.</p>
             </div>
           </div>
