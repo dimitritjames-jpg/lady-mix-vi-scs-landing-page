@@ -585,33 +585,42 @@ h1 em {
   font-size: 1rem;
 }
 
-.event-input {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  border: 1px solid rgba(255, 236, 247, 0.7);
-  background: rgba(18, 10, 25, 0.45);
-  border-radius: 0.95rem;
-  padding: 0.3rem 0.75rem 0.3rem 1rem;
-  box-shadow: inset 0 0 22px rgba(255, 255, 255, 0.05);
+.assistant-stage {
+  margin: 0.72rem 0 0.3rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(255, 236, 247, 0.62);
 }
 
-.event-input input {
-  flex: 1;
-  min-width: 0;
-  height: 3.65rem;
-  border: 0;
-  background: transparent;
-  color: #fff;
+.assistant-progress {
+  margin: 0 0 0.9rem;
+  width: 100%;
+  height: 0.48rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 236, 247, 0.18);
+  overflow: hidden;
+  position: relative;
 }
 
-.event-input input::placeholder {
-  color: rgba(255, 240, 248, 0.6);
+.assistant-progress span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff4c95, #bf58ff);
+  transition: width 0.35s ease;
 }
 
-.event-input span {
-  font-size: 1.1rem;
-  color: #fff;
+.assistant-field-label {
+  display: block;
+  text-align: left;
+  color: rgba(255, 245, 251, 0.88);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
 }
 
 .chip-grid {
@@ -641,39 +650,34 @@ h1 em {
   transform: translateY(-1px);
 }
 
-.booking-form {
-  margin-top: 1rem;
+.concierge-form {
   display: grid;
-  gap: 0.72rem;
+  gap: 0.64rem;
+  margin: 0.5rem 0 0.4rem;
   text-align: left;
 }
 
-.booking-form label,
-.hidden-label {
-  display: grid;
-  gap: 0.38rem;
-  color: rgba(255, 245, 251, 0.9);
-  font-size: 0.84rem;
-  letter-spacing: 0.03em;
-}
-
-.booking-form input,
-.booking-form textarea {
+.assistant-input {
   width: 100%;
   border: 1px solid rgba(255, 236, 247, 0.45);
   border-radius: 0.72rem;
   background: rgba(12, 6, 15, 0.56);
-  padding: 0.68rem 0.85rem;
+  padding: 0.72rem 0.9rem;
   color: #fff;
-}
-
-.booking-form textarea {
+  min-height: 3.1rem;
   resize: vertical;
-  min-height: 5.3rem;
 }
 
-.hidden-label {
-  display: none;
+.assistant-input:focus {
+  outline: 2px solid rgba(255, 122, 217, 0.62);
+  outline-offset: 1px;
+}
+
+.concierge-actions {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 0.2rem;
+  justify-content: center;
 }
 
 .booking-summary {
@@ -699,8 +703,70 @@ h1 em {
   white-space: pre-wrap;
 }
 
+.booking-summary.concise ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.05rem;
+  display: grid;
+  gap: 0.28rem;
+  color: rgba(255, 245, 251, 0.9);
+  max-height: 10.5rem;
+  overflow: auto;
+}
+
+.booking-summary.concise li {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.summary-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.summary-toggle,
+.ghost-cta,
+.summary-mini,
+.concierge-quick-send {
+  font: inherit;
+}
+
+.summary-toggle,
+.ghost-cta {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  color: rgba(255, 236, 247, 0.95);
+  padding: 0.28rem 0.72rem;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.summary-head strong {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.summary-mini {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  color: rgba(255, 236, 247, 0.72);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
 .secondary-cta {
-  justify-self: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.2rem 0 0.6rem;
+  width: min(31.8rem, 100%);
   margin: 0.2rem 0 0.6rem;
   font-size: 0.73rem;
   color: var(--pink);

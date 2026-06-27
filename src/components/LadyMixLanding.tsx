@@ -1,7 +1,7 @@
 "use client";
 
+import { FormEvent, useMemo, useState, useEffect } from "react";
 import Image from "next/image";
-import { FormEvent, useMemo, useState } from "react";
 import { bookingChips, bookingDetails, floatingMedia, LADY_MIX_EMAIL } from "../data/site";
 
 type FormState = {
@@ -15,10 +15,88 @@ type FormState = {
   message: string;
 };
 
+type ConciergeStepKey = "eventType" | "eventDate" | "eventLocation" | "guestCount" | "name" | "email" | "phone" | "message";
+
+type ConciergeStep = {
+  key: ConciergeStepKey;
+  label: string;
+  prompt: string;
+  placeholder: string;
+  inputType: "text" | "email" | "tel" | "date" | "number" | "textarea";
+  required: boolean;
+};
+
 type SubmitState = {
   type: "idle" | "sending" | "success" | "fallback" | "error";
   message: string;
 };
+
+const steps: ConciergeStep[] = [
+  {
+    key: "eventType",
+    label: "Event type",
+    prompt: "Tell me what kind of event you’re planning…",
+    placeholder: "Wedding, private party, corporate event, or paste your full request",
+    inputType: "textarea",
+    required: true,
+  },
+  {
+    key: "eventDate",
+    label: "Event date",
+    prompt: "What date is the event?",
+    placeholder: "YYYY-MM-DD",
+    inputType: "date",
+    required: true,
+  },
+  {
+    key: "eventLocation",
+    label: "Event location",
+    prompt: "Where should Lady Mix VI perform?",
+    placeholder: "Magens Bay, hotel, or destination",
+    inputType: "text",
+    required: true,
+  },
+  {
+    key: "guestCount",
+    label: "Guest count",
+    prompt: "How many guests are you planning for?",
+    placeholder: "120",
+    inputType: "number",
+    required: true,
+  },
+  {
+    key: "name",
+    label: "Name",
+    prompt: "Who should we book this for?",
+    placeholder: "Your full name",
+    inputType: "text",
+    required: true,
+  },
+  {
+    key: "email",
+    label: "Email",
+    prompt: "Where should I send the confirmation?",
+    placeholder: "you@email.com",
+    inputType: "email",
+    required: true,
+  },
+  {
+    key: "phone",
+    label: "Phone",
+    prompt: "Best number for quick confirmations",
+    placeholder: "(555) 123-4567",
+    inputType: "tel",
+    required: true,
+  },
+  {
+    key: "message",
+    label: "Vibe request",
+    prompt: "Any last-minute details or playlist notes?",
+    placeholder: "Tell me your vibe, artists, and timing",
+    inputType: "textarea",
+    required: false,
+  },
+];
 
 const navItems = [
   { label: "Home", href: "#top" },
@@ -29,6 +107,36 @@ const navItems = [
   { label: "Booking", href: "#booking" },
   { label: "Contact", href: "#contact" },
 ];
+
+function detectEventType(raw: string) {
+  const normalized = raw.toLowerCase();
+  if (normalized.includes("wedding")) return "Weddings";
+  if (normalized.includes("private")) return "Private Parties";
+  if (normalized.includes("corporate")) return "Corporate Events";
+  if (normalized.includes("love r&b") || normalized.includes("island girls")) return "Island Girls Love R&B";
+  if (normalized.includes("mix")) return "View Mixes";
+  if (normalized.includes("availability") || normalized.includes("check")) return "Check Availability";
+  return "";
+}
+
+function detectDate(raw: string) {
+  const monthDate = raw.match(/\b((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}(?:,\s*\d{4})?)/i);
+  if (monthDate) return monthDate[1];
+  const isoDate = raw.match(/\b\d{4}-\d{2}-\d{2}\b/);
+  if (isoDate) return isoDate[0];
+  const slashDate = raw.match(/\b\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}\b/);
+  return slashDate ? slashDate[0] : "";
+}
+
+function detectLocation(raw: string) {
+  const match = raw.match(/\b(?:at|in)\s+([A-Za-z0-9',.\\-\\s]{3,80})/i);
+  return match ? match[1].trim() : "";
+}
+
+function detectGuestCount(raw: string) {
+  const match = raw.match(/(\d{1,4})\s*(?:people|person|guests?|guesta|ppl|heads?)/i);
+  return match ? match[1] : "";
+}
 
 function buildMailto(payload: FormState) {
   const subject = `Booking inquiry for Lady Mix VI — ${payload.eventType || "General booking"}`;
@@ -42,56 +150,107 @@ export default function LadyMixLanding() {
     name: "",
     email: "",
     phone: "",
-    eventType: "Private Parties",
+    eventType: "",
     eventDate: "",
     eventLocation: "",
     guestCount: "",
     message: "",
   });
+
+  const [activeStep, setActiveStep] = useState(0);
+  const [assistantInput, setAssistantInput] = useState("");
+  const [summaryOpen, setSummaryOpen] = useState(true);
   const [status, setStatus] = useState<SubmitState>({ type: "idle", message: "" });
+
+  const currentStep = steps[activeStep];
+  const currentStepKey = currentStep.key;
+  const currentValue = form[currentStepKey] || "";
+  const progress = Math.round(((activeStep + (currentValue.trim() ? 1 : 0)) / steps.length) * 100);
+
+  useEffect(() => {
+    setAssistantInput(currentValue);
+    setStatus({ type: "idle", message: "" });
+  }, [activeStep, currentStepKey, currentValue]);
 
   const mailtoHref = useMemo(() => buildMailto(form), [form]);
 
-  const summaryText = useMemo(
-    () =>
-      [
-        `Name: ${form.name || "—"}`,
-        `Email: ${form.email || "—"}`,
-        `Phone: ${form.phone || "—"}`,
-        `Event type: ${form.eventType || "—"}`,
-        `Event date: ${form.eventDate || "—"}`,
-        `Location: ${form.eventLocation || "—"}`,
-        `Guest count: ${form.guestCount || "—"}`,
-        `Vibe notes: ${form.message || "—"}`,
-      ].join("\n"),
+  const capturedSummary = useMemo(
+    () => [
+      `Event type: ${form.eventType || "--"}`,
+      `Event date: ${form.eventDate || "--"}`,
+      `Location: ${form.eventLocation || "--"}`,
+      `Guest count: ${form.guestCount || "--"}`,
+      `Name: ${form.name || "--"}`,
+      `Email: ${form.email || "--"}`,
+      `Phone: ${form.phone || "--"}`,
+      `Vibe request: ${form.message || "--"}`,
+    ],
     [form],
   );
 
-  const setChipIntent = (intent: string) => {
-    setForm((prev) => ({
-      ...prev,
-      eventType: intent,
-      message: prev.message || `${intent} inquiry` ,
-    }));
-  };
+  function nextUnfinishedStep(seed: FormState, fromIndex: number) {
+    for (let i = fromIndex; i < steps.length; i += 1) {
+      const step = steps[i];
+      if (step.required && !seed[step.key]) {
+        return i;
+      }
+    }
+    return steps.length;
+  }
 
-  const setField = (field: keyof FormState, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
+  function applyNaturalLanguage(payload: string, seed: FormState) {
+    const parsedType = detectEventType(payload);
+    const parsedDate = detectDate(payload);
+    const parsedLocation = detectLocation(payload);
+    const parsedGuests = detectGuestCount(payload);
 
-  const canSubmit = form.name.trim() && form.email.trim() && form.eventType.trim() && form.email.includes("@");
+    const next = { ...seed };
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (!next.eventType && parsedType) next.eventType = parsedType;
+    if (!next.eventDate && parsedDate) next.eventDate = parsedDate;
+    if (!next.eventLocation && parsedLocation) next.eventLocation = parsedLocation;
+    if (!next.guestCount && parsedGuests) next.guestCount = parsedGuests;
+    if (!next.message) next.message = payload.trim();
+
+    return next;
+  }
+
+  function isCurrentStepComplete() {
+    if (currentStep.required) {
+      if (!assistantInput.trim() && !currentValue.trim()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function jumpToFirstMissing() {
+    const index = nextUnfinishedStep(form, 0);
+    setActiveStep(index >= steps.length ? steps.length - 1 : index);
+  }
+
+  function setByStepKey(key: ConciergeStepKey, value: string) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function setIntentChip(intent: string) {
+    setForm((prev) => ({ ...prev, eventType: intent }));
+    setActiveStep(1);
+    setAssistantInput("");
+    setStatus({ type: "idle", message: "" });
+  }
+
+  async function submitInquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canSubmit) {
-      setStatus({
-        type: "error",
-        message: "Please enter your name, email, and event type before submitting.",
-      });
+    const requiredMissing = steps.find((step) => step.required && !form[step.key].trim());
+    if (requiredMissing) {
+      const missingIndex = steps.findIndex((step) => step.key === requiredMissing.key);
+      setStatus({ type: "error", message: `Please complete the Concierge step: ${requiredMissing.label}.` });
+      setActiveStep(missingIndex);
       return;
     }
 
-    setStatus({ type: "sending", message: "Preparing inquiry..." });
+    setStatus({ type: "sending", message: "Preparing your booking request..." });
     try {
       const response = await fetch("/api/booking", {
         method: "POST",
@@ -100,28 +259,74 @@ export default function LadyMixLanding() {
       });
 
       if (response.ok) {
-        setStatus({
-          type: "success",
-          message: "Inquiry submitted. Your details were sent to the SCS booking pipeline.",
-        });
+        setStatus({ type: "success", message: "Booking inquiry sent through SCS assistant pipeline." });
         return;
       }
 
       window.location.href = mailtoHref;
       setStatus({
         type: "fallback",
-        message:
-          "Booking API is not configured. Opened a prefilled email to ladymixvi@gmail.com so you can send it directly.",
+        message: "Booking API is not configured. Opened prefilled email to ladymixvi@gmail.com.",
       });
     } catch {
       window.location.href = mailtoHref;
       setStatus({
         type: "fallback",
-        message:
-          "Sending through API failed. Opened a prefilled email to ladymixvi@gmail.com so your inquiry is safe to send.",
+        message: "Sending through API failed. Opened prefilled email to ladymixvi@gmail.com.",
       });
     }
   }
+
+  function advanceStep(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!isCurrentStepComplete()) {
+      setStatus({ type: "error", message: `Please provide ${currentStep.label.toLowerCase()} to continue.` });
+      return;
+    }
+
+    if (currentStep.key === "eventType") {
+      const payload = assistantInput.trim();
+      let nextForm = { ...form };
+      if (payload) {
+        nextForm.eventType = payload;
+        const detectedType = detectEventType(payload);
+        if (!form.eventType && detectedType) nextForm.eventType = detectedType;
+        nextForm = applyNaturalLanguage(payload, nextForm);
+      }
+      setForm(nextForm);
+
+      const next = nextUnfinishedStep(nextForm, 1);
+      if (next < steps.length) {
+        setActiveStep(next);
+        return;
+      }
+      setActiveStep(steps.length - 1);
+      return;
+    }
+
+    setByStepKey(currentStep.key, assistantInput.trim());
+    const next = nextUnfinishedStep({ ...form, [currentStep.key]: assistantInput.trim() }, activeStep + 1);
+    if (next < steps.length) {
+      setActiveStep(next);
+      return;
+    }
+    setActiveStep(steps.length - 1);
+    setSummaryOpen(true);
+  }
+
+  function goBack() {
+    if (activeStep > 0) {
+      setActiveStep(activeStep - 1);
+    }
+  }
+
+  const finalLabel =
+    activeStep < steps.length - 1
+      ? "Prepare Booking Inquiry"
+      : form.message
+        ? "Send Booking Request"
+        : "Check Availability";
+  const allRequiredDone = steps.filter((step) => step.required).every((step) => form[step.key].trim().length > 0);
 
   return (
     <main className="site-shell">
@@ -133,7 +338,9 @@ export default function LadyMixLanding() {
 
       <header className="top-nav" aria-label="Main navigation">
         <a className="brand" href="#top" aria-label="Lady Mix VI home">
-          <span>LADY <strong>MIX VI</strong></span>
+          <span>
+            LADY <strong>MIX VI</strong>
+          </span>
           <small>THE VI DJ EXPERIENCE</small>
         </a>
         <nav className="desktop-nav" aria-label="Primary">
@@ -205,111 +412,103 @@ export default function LadyMixLanding() {
           </h1>
           <p className="tagline">Your event. Your vibe. My soundtrack.</p>
 
-          <p className="prompt-label">Pick your event type and send the full inquiry.</p>
-          <div className="chip-grid" role="list" aria-label="Booking shortcuts">
-            {bookingChips.map((chip) => (
-              <button
-                key={chip.label}
-                className={form.eventType === chip.label ? "selected" : ""}
-                type="button"
-                onClick={() => setChipIntent(chip.label)}
-              >
-                <span>{chip.icon}</span>
-                {chip.label}
-              </button>
-            ))}
+          <p className="assistant-stage">{`Step ${Math.min(activeStep + 1, steps.length)} of ${steps.length}`}</p>
+
+          <div className="assistant-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+            <span style={{ width: `${progress}%` }} />
           </div>
 
-          <form className="booking-form" onSubmit={handleSubmit}>
-            <label htmlFor="guest-name">
-              Name
-              <input
-                id="guest-name"
-                value={form.name}
-                onChange={(event) => setField("name", event.target.value)}
-                placeholder="Your full name"
-                required
-              />
-            </label>
-            <label htmlFor="guest-email">
-              Email
-              <input
-                id="guest-email"
-                type="email"
-                value={form.email}
-                onChange={(event) => setField("email", event.target.value)}
-                placeholder="you@email.com"
-                required
-              />
-            </label>
-            <label htmlFor="guest-phone">
-              Phone
-              <input
-                id="guest-phone"
-                type="tel"
-                value={form.phone}
-                onChange={(event) => setField("phone", event.target.value)}
-                placeholder="(###) ###-####"
-              />
-            </label>
-            <label htmlFor="event-date">
-              Event date
-              <input
-                id="event-date"
-                type="date"
-                value={form.eventDate}
-                onChange={(event) => setField("eventDate", event.target.value)}
-              />
-            </label>
-            <label htmlFor="event-location">
-              Event location
-              <input
-                id="event-location"
-                value={form.eventLocation}
-                onChange={(event) => setField("eventLocation", event.target.value)}
-                placeholder="Villa, hotel, club, destination"
-              />
-            </label>
-            <label htmlFor="guest-count">
-              Estimated guest count
-              <input
-                id="guest-count"
-                type="number"
-                min={1}
-                value={form.guestCount}
-                onChange={(event) => setField("guestCount", event.target.value)}
-                placeholder="30"
-              />
-            </label>
-            <label htmlFor="event-message">
-              Message / vibe request
-              <textarea
-                id="event-message"
-                value={form.message}
-                onChange={(event) => setField("message", event.target.value)}
-                rows={3}
-                placeholder="Tell me your vibe, songs, and timeline..."
-              />
-            </label>
-            <label htmlFor="event-type" className="hidden-label">
-              Event type
-              <input id="event-type" value={form.eventType} readOnly />
-            </label>
+          <p className="prompt-label">{currentStep.prompt}</p>
 
-            <div className="booking-summary" aria-live="polite">
-              <p>Inquiry preview</p>
-              <pre>{summaryText}</pre>
+          {currentStep.key === "eventType" ? (
+            <div className="chip-grid" role="list" aria-label="Booking shortcuts">
+              {bookingChips.map((chip) => (
+                <button
+                  key={chip.label}
+                  className={form.eventType === chip.label ? "selected" : ""}
+                  type="button"
+                  onClick={() => setIntentChip(chip.label)}
+                >
+                  <span>{chip.icon}</span>
+                  {chip.label}
+                </button>
+              ))}
             </div>
+          ) : null}
 
-            <button className="primary-cta" type="submit" disabled={!canSubmit || status.type === "sending"}>
-              {status.type === "sending" ? "Submitting..." : "Submit Booking Inquiry"}
-            </button>
-            <a className="secondary-cta" href={mailtoHref}>
-              Open prefilled email draft
-            </a>
+          <form className="concierge-form" onSubmit={currentStep.key === "message" ? submitInquiry : advanceStep}>
+            <label className="assistant-field-label" htmlFor="assistant-input">
+              {currentStep.label}
+            </label>
+
+            {currentStep.inputType === "textarea" ? (
+              <textarea
+                id="assistant-input"
+                value={assistantInput}
+                onChange={(event) => setAssistantInput(event.target.value)}
+                rows={currentStep.key === "message" ? 2 : 3}
+                placeholder={currentStep.placeholder}
+                className="assistant-input"
+              />
+            ) : (
+              <input
+                id="assistant-input"
+                type={currentStep.inputType}
+                value={assistantInput}
+                onChange={(event) => setAssistantInput(event.target.value)}
+                placeholder={currentStep.placeholder}
+                className="assistant-input"
+              />
+            )}
+
+            <div className="concierge-actions">
+              {activeStep > 0 ? (
+                <button type="button" onClick={goBack} className="ghost-cta">
+                  Back
+                </button>
+              ) : null}
+              <button
+                type="submit"
+                className={currentStep.key === "message" ? "primary-cta concierge-submit" : "primary-cta concierge-advance"}
+                disabled={status.type === "sending" || (!currentStep.required && !assistantInput.trim() && currentStep.key !== "message")}
+              >
+                {currentStep.key === "message" ? finalLabel : "Next"}
+              </button>
+            </div>
           </form>
 
+          <div className="booking-summary concise" aria-live="polite">
+            <div className="summary-head">
+              <strong>Booking details captured</strong>
+              <button type="button" onClick={() => setSummaryOpen((open) => !open)} className="summary-toggle">
+                {summaryOpen ? "Hide" : "Show"}
+              </button>
+            </div>
+            {summaryOpen ? (
+              <ul>
+                {capturedSummary.map((detail) => (
+                  <li key={detail}>{detail}</li>
+                ))}
+              </ul>
+            ) : null}
+            <div className="summary-mini">
+              <span>{form.eventType || "No event type yet"}</span>
+              <span>{form.eventDate || "Date pending"}</span>
+            </div>
+          </div>
+
           {status.message ? <p className={`submit-feedback ${status.type}`}>{status.message}</p> : null}
+
+          <a href={mailtoHref} className="secondary-cta" onClick={() => jumpToFirstMissing()}>
+            Open prefilled email draft
+          </a>
+
+          {allRequiredDone ? (
+            <button type="button" className="primary-cta concierge-quick-send" onClick={() => setActiveStep(steps.length - 1)}>
+              {finalLabel}
+            </button>
+          ) : null}
+
           <p className="secure-line">Powered by SCS • Secure • Personalized • Seamless</p>
         </section>
       </section>
@@ -319,7 +518,7 @@ export default function LadyMixLanding() {
         {["Barbie Brunch", "Island Girls Love R&B", "Private Villas", "Resort Events", "Corporate Mixers", "VI Nightlife"].map(
           (logo) => (
             <span key={logo}>{logo}</span>
-          )
+          ),
         )}
       </section>
 
