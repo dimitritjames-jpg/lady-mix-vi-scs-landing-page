@@ -129,8 +129,13 @@ function detectDate(raw: string) {
 }
 
 function detectLocation(raw: string) {
-  const match = raw.match(/\b(?:at|in)\s+([A-Za-z0-9',.\\-\\s]{3,80})/i);
-  return match ? match[1].trim() : "";
+  const match = raw.match(/\b(?:at|in)\s+([A-Za-z0-9',.\-\s]{3,80})/i);
+  if (!match) return "";
+
+  return match[1]
+    .replace(/\s+\b(?:for|with|about|around|near|at|on|by|nearby|including)\b.*$/i, "")
+    .replace(/\s+\d{1,4}\s+(?:people|person|guests?|guesta|ppl|heads?)/i, "")
+    .trim();
 }
 
 function detectGuestCount(raw: string) {
