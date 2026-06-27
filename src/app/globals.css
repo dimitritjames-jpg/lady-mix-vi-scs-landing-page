@@ -399,6 +399,16 @@ a:focus-visible {
   background: var(--art);
 }
 
+.media-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.56;
+  filter: saturate(140%) contrast(108%);
+}
+
 .media-card span,
 .media-card strong {
   position: relative;
@@ -629,6 +639,104 @@ h1 em {
   background: rgba(255, 47, 128, 0.2);
   box-shadow: 0 0 24px rgba(255, 47, 128, 0.26);
   transform: translateY(-1px);
+}
+
+.booking-form {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.72rem;
+  text-align: left;
+}
+
+.booking-form label,
+.hidden-label {
+  display: grid;
+  gap: 0.38rem;
+  color: rgba(255, 245, 251, 0.9);
+  font-size: 0.84rem;
+  letter-spacing: 0.03em;
+}
+
+.booking-form input,
+.booking-form textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 236, 247, 0.45);
+  border-radius: 0.72rem;
+  background: rgba(12, 6, 15, 0.56);
+  padding: 0.68rem 0.85rem;
+  color: #fff;
+}
+
+.booking-form textarea {
+  resize: vertical;
+  min-height: 5.3rem;
+}
+
+.hidden-label {
+  display: none;
+}
+
+.booking-summary {
+  border: 1px solid rgba(255, 209, 242, 0.38);
+  border-radius: 0.9rem;
+  padding: 0.7rem 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.booking-summary p {
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.64rem;
+}
+
+.booking-summary pre {
+  margin: 0;
+  font-family: "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.42;
+  color: rgba(255, 248, 253, 0.95);
+  white-space: pre-wrap;
+}
+
+.secondary-cta {
+  justify-self: center;
+  margin: 0.2rem 0 0.6rem;
+  font-size: 0.73rem;
+  color: var(--pink);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.submit-feedback {
+  margin: 0.3rem 0 0.85rem;
+  border-radius: 0.72rem;
+  padding: 0.58rem 0.8rem;
+  border: 1px solid transparent;
+}
+
+.submit-feedback.success {
+  color: #dbffe1;
+  background: rgba(45, 125, 79, 0.17);
+  border-color: rgba(84, 214, 143, 0.36);
+}
+
+.submit-feedback.fallback {
+  color: #ffe0b8;
+  background: rgba(191, 111, 41, 0.18);
+  border-color: rgba(255, 186, 107, 0.34);
+}
+
+.submit-feedback.error {
+  color: #ffd1d1;
+  background: rgba(170, 42, 42, 0.2);
+  border-color: rgba(255, 110, 110, 0.35);
+}
+
+.submit-feedback.sending {
+  color: rgba(255, 248, 253, 0.76);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 236, 247, 0.34);
 }
 
 .primary-cta {
