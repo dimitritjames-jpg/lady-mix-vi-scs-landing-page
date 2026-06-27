@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { FormEvent, useMemo, useState, useEffect } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { bookingChips, bookingDetails, floatingMedia, LADY_MIX_EMAIL } from "../data/site";
 
@@ -36,15 +36,15 @@ const steps: ConciergeStep[] = [
     key: "eventType",
     label: "Event type",
     prompt: "Tell me what kind of event you’re planning…",
-    placeholder: "Wedding, private party, corporate event, or paste your full request",
+    placeholder: "I need Lady Mix VI for a wedding, private party, corporate event, or a full request",
     inputType: "textarea",
     required: true,
   },
   {
     key: "eventDate",
     label: "Event date",
-    prompt: "What date is the event?",
-    placeholder: "YYYY-MM-DD",
+    prompt: "What date is the event? (ISO date works perfectly)",
+    placeholder: "2026-08-10",
     inputType: "date",
     required: true,
   },
@@ -52,7 +52,7 @@ const steps: ConciergeStep[] = [
     key: "eventLocation",
     label: "Event location",
     prompt: "Where should Lady Mix VI perform?",
-    placeholder: "Magens Bay, hotel, or destination",
+    placeholder: "Magens Bay, St. Thomas",
     inputType: "text",
     required: true,
   },
@@ -67,7 +67,7 @@ const steps: ConciergeStep[] = [
   {
     key: "name",
     label: "Name",
-    prompt: "Who should we book this for?",
+    prompt: "Who is booking this event?",
     placeholder: "Your full name",
     inputType: "text",
     required: true,
@@ -75,7 +75,7 @@ const steps: ConciergeStep[] = [
   {
     key: "email",
     label: "Email",
-    prompt: "Where should I send the confirmation?",
+    prompt: "Where should I send the booking note?",
     placeholder: "you@email.com",
     inputType: "email",
     required: true,
@@ -84,15 +84,15 @@ const steps: ConciergeStep[] = [
     key: "phone",
     label: "Phone",
     prompt: "Best number for quick confirmations",
-    placeholder: "(555) 123-4567",
+    placeholder: "(340) 555-0147",
     inputType: "tel",
     required: true,
   },
   {
     key: "message",
-    label: "Vibe request",
-    prompt: "Any last-minute details or playlist notes?",
-    placeholder: "Tell me your vibe, artists, and timing",
+    label: "Message / vibe request",
+    prompt: "Any tempo, artist callouts, or pacing notes?",
+    placeholder: "Tell me your preferred tone, vibe, and timing",
     inputType: "textarea",
     required: false,
   },
@@ -100,12 +100,10 @@ const steps: ConciergeStep[] = [
 
 const navItems = [
   { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
   { label: "Events", href: "#events" },
   { label: "Mixes", href: "#mixes" },
   { label: "Gallery", href: "#gallery" },
   { label: "Booking", href: "#booking" },
-  { label: "Contact", href: "#contact" },
 ];
 
 function detectEventType(raw: string) {
@@ -129,12 +127,13 @@ function detectDate(raw: string) {
 }
 
 function detectLocation(raw: string) {
-  const match = raw.match(/\b(?:at|in)\s+([A-Za-z0-9',.\-\s]{3,80})/i);
+  const match = raw.match(/\b(?:at|in)\s+([A-Za-z0-9'`\-.#&\s]{3,90})/i);
   if (!match) return "";
 
   return match[1]
-    .replace(/\s+\b(?:for|with|about|around|near|at|on|by|nearby|including)\b.*$/i, "")
-    .replace(/\s+\d{1,4}\s+(?:people|person|guests?|guesta|ppl|heads?)/i, "")
+    .replace(/\s+for\s+.*$/i, "")
+    .replace(/\s+for\s+\d{1,4}\s+.*$/i, "")
+    .replace(/\s+(people|person|guests?|heads?)\b.*$/i, "")
     .trim();
 }
 
@@ -145,7 +144,7 @@ function detectGuestCount(raw: string) {
 
 function buildMailto(payload: FormState) {
   const subject = `Booking inquiry for Lady Mix VI — ${payload.eventType || "General booking"}`;
-  const body = `Hi Lady Mix VI,\n\nI would like to plan an event.\n\nName: ${payload.name || ""}\nEmail: ${payload.email || ""}\nPhone: ${payload.phone || ""}\nEvent type: ${payload.eventType || ""}\nEvent date: ${payload.eventDate || ""}\nLocation: ${payload.eventLocation || ""}\nEstimated guest count: ${payload.guestCount || ""}\nMessage/vibe request: ${payload.message || ""}\n\nPlease confirm your availability and next steps.\n`;
+  const body = `Hi Lady Mix VI,\n\nI would like to plan an event.\n\nName: ${payload.name || ""}\nEmail: ${payload.email || ""}\nPhone: ${payload.phone || ""}\nEvent type: ${payload.eventType || ""}\nEvent date: ${payload.eventDate || ""}\nLocation: ${payload.eventLocation || ""}\nEstimated guest count: ${payload.guestCount || ""}\nMessage/vibe request: ${payload.message || ""}\n\nPlease confirm your availability and next steps.`;
 
   return `mailto:${LADY_MIX_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
@@ -170,7 +169,8 @@ export default function LadyMixLanding() {
   const currentStep = steps[activeStep];
   const currentStepKey = currentStep.key;
   const currentValue = form[currentStepKey] || "";
-  const progress = Math.round(((activeStep + (currentValue.trim() ? 1 : 0)) / steps.length) * 100);
+  const capturedCount = steps.filter((step) => step.required && form[step.key].trim()).length;
+  const progress = Math.round((capturedCount / steps.filter((step) => step.required).length) * 100);
 
   useEffect(() => {
     setAssistantInput(currentValue);
@@ -204,12 +204,12 @@ export default function LadyMixLanding() {
   }
 
   function applyNaturalLanguage(payload: string, seed: FormState) {
+    const next = { ...seed };
+
     const parsedType = detectEventType(payload);
     const parsedDate = detectDate(payload);
     const parsedLocation = detectLocation(payload);
     const parsedGuests = detectGuestCount(payload);
-
-    const next = { ...seed };
 
     if (!next.eventType && parsedType) next.eventType = parsedType;
     if (!next.eventDate && parsedDate) next.eventDate = parsedDate;
@@ -221,12 +221,10 @@ export default function LadyMixLanding() {
   }
 
   function isCurrentStepComplete() {
-    if (currentStep.required) {
-      if (!assistantInput.trim() && !currentValue.trim()) {
-        return false;
-      }
+    if (!currentStep.required) {
+      return true;
     }
-    return true;
+    return assistantInput.trim().length > 0;
   }
 
   function jumpToFirstMissing() {
@@ -298,8 +296,8 @@ export default function LadyMixLanding() {
         if (!form.eventType && detectedType) nextForm.eventType = detectedType;
         nextForm = applyNaturalLanguage(payload, nextForm);
       }
-      setForm(nextForm);
 
+      setForm(nextForm);
       const next = nextUnfinishedStep(nextForm, 1);
       if (next < steps.length) {
         setActiveStep(next);
@@ -310,11 +308,13 @@ export default function LadyMixLanding() {
     }
 
     setByStepKey(currentStep.key, assistantInput.trim());
+
     const next = nextUnfinishedStep({ ...form, [currentStep.key]: assistantInput.trim() }, activeStep + 1);
     if (next < steps.length) {
       setActiveStep(next);
       return;
     }
+
     setActiveStep(steps.length - 1);
     setSummaryOpen(true);
   }
@@ -325,12 +325,6 @@ export default function LadyMixLanding() {
     }
   }
 
-  const finalLabel =
-    activeStep < steps.length - 1
-      ? "Prepare Booking Inquiry"
-      : form.message
-        ? "Send Booking Request"
-        : "Check Availability";
   const allRequiredDone = steps.filter((step) => step.required).every((step) => form[step.key].trim().length > 0);
 
   return (
@@ -350,7 +344,7 @@ export default function LadyMixLanding() {
         </a>
         <nav className="desktop-nav" aria-label="Primary">
           {navItems.map((item) => (
-            <a key={item.label} className={item.label === "Home" ? "active" : ""} href={item.href}>
+            <a key={item.label} href={item.href} className={item.label === "Home" ? "active" : ""}>
               {item.label}
             </a>
           ))}
@@ -369,6 +363,11 @@ export default function LadyMixLanding() {
       </header>
 
       <section className="hero" id="top" aria-labelledby="hero-title">
+        <div className="hero-copy">
+          <p className="kicker">SCS FLOATING CONCIERGE</p>
+          <p className="hero-statement">Where VI nightlife, R&B energy, and private events meet.</p>
+        </div>
+
         <div className="dj-hero-art" aria-hidden="true">
           <div className="dj-glow" />
           <div className="dj-figure">
@@ -400,7 +399,7 @@ export default function LadyMixLanding() {
                   fill
                   aria-hidden="true"
                   className="media-card-image"
-                  sizes="(min-width: 1100px) 220px, 0px"
+                  sizes="(min-width: 1200px) 220px, 160px"
                 />
               ) : null}
             </article>
@@ -411,13 +410,18 @@ export default function LadyMixLanding() {
           <div className="portrait-orb" aria-hidden="true">
             <span />
           </div>
-          <p className="kicker">SCS FLOATING CONCIERGE</p>
+          <p className="hero-role">Premium booking assistant</p>
           <h1 id="hero-title">
             BOOK <em>Lady Mix VI</em>
           </h1>
-          <p className="tagline">Your event. Your vibe. My soundtrack.</p>
+          <p className="tagline">The soundtrack for unforgettable nights.</p>
 
-          <p className="assistant-stage">{`Step ${Math.min(activeStep + 1, steps.length)} of ${steps.length}`}</p>
+          <div className="assistant-stage">
+            <span>
+              Step {Math.min(activeStep + 1, steps.length)} of {steps.length}
+            </span>
+            <span>• Concierge mode: guided intake</span>
+          </div>
 
           <div className="assistant-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
             <span style={{ width: `${progress}%` }} />
@@ -451,7 +455,7 @@ export default function LadyMixLanding() {
                 id="assistant-input"
                 value={assistantInput}
                 onChange={(event) => setAssistantInput(event.target.value)}
-                rows={currentStep.key === "message" ? 2 : 3}
+                rows={currentStep.key === "message" ? 3 : 2}
                 placeholder={currentStep.placeholder}
                 className="assistant-input"
               />
@@ -472,12 +476,13 @@ export default function LadyMixLanding() {
                   Back
                 </button>
               ) : null}
+
               <button
                 type="submit"
-                className={currentStep.key === "message" ? "primary-cta concierge-submit" : "primary-cta concierge-advance"}
-                disabled={status.type === "sending" || (!currentStep.required && !assistantInput.trim() && currentStep.key !== "message")}
+                className="primary-cta concierge-advance"
+                disabled={status.type === "sending"}
               >
-                {currentStep.key === "message" ? finalLabel : "Next"}
+                {currentStep.key === "message" ? "Send Booking Request" : "Next"}
               </button>
             </div>
           </form>
@@ -499,82 +504,92 @@ export default function LadyMixLanding() {
             <div className="summary-mini">
               <span>{form.eventType || "No event type yet"}</span>
               <span>{form.eventDate || "Date pending"}</span>
+              <span>{form.guestCount || "TBD"}</span>
             </div>
           </div>
 
           {status.message ? <p className={`submit-feedback ${status.type}`}>{status.message}</p> : null}
 
-          <a href={mailtoHref} className="secondary-cta" onClick={() => jumpToFirstMissing()}>
-            Open prefilled email draft
-          </a>
-
           {allRequiredDone ? (
-            <button type="button" className="primary-cta concierge-quick-send" onClick={() => setActiveStep(steps.length - 1)}>
-              {finalLabel}
+            <button type="button" className="secondary-cta" onClick={() => setActiveStep(steps.length - 1)}>
+              Prepare Booking Inquiry
             </button>
           ) : null}
 
-          <p className="secure-line">Powered by SCS • Secure • Personalized • Seamless</p>
+          <a href={mailtoHref} className="quick-mail" onClick={() => jumpToFirstMissing()}>
+            Open prefilled inquiry email
+          </a>
+
+          <p className="secure-line">SCS • Concierge-first • Polished booking for private and corporate nights</p>
+
+          {!allRequiredDone ? <p className="assistant-hint">Tip: type a full request in one message and we’ll pre-fill each step.</p> : null}
         </section>
       </section>
 
-      <section className="proof-strip" id="gallery" aria-label="Event trust strip">
-        <p>Trusted by unforgettable events and private brands</p>
-        {["Barbie Brunch", "Island Girls Love R&B", "Private Villas", "Resort Events", "Corporate Mixers", "VI Nightlife"].map(
-          (logo) => (
-            <span key={logo}>{logo}</span>
-          ),
-        )}
+      <section className="proof-strip" id="gallery" aria-label="Feature strip">
+        <p>VI Based. Event Ready.</p>
+        {[
+          "Island Nights",
+          "R&B / Wedding-ready energy",
+          "Private villas",
+          "Destination events",
+          "Corporate launches",
+          "Girls' night elevated",
+        ].map((label) => (
+          <span key={label}>{label}</span>
+        ))}
       </section>
-
-      <div id="about" />
 
       <section className="below-fold" aria-label="Booking preview sections">
         <article className="panel featured" id="events">
           <div className="panel-head">
-            <h2>Featured Events</h2>
-            <a href="#booking">View All →</a>
+            <h2>Featured nights</h2>
+            <a href="#booking">Start booking →</a>
           </div>
           <div className="event-tiles">
             <div>
-              <strong>Island Girls Love R&B</strong>
+              <strong>Weddings in motion</strong>
             </div>
             <div>
-              <strong>Barbie Brunch</strong>
+              <strong>Island Girls Love R&amp;B</strong>
             </div>
             <div>
-              <strong>VI To The World</strong>
+              <strong>Corporate and destination receptions</strong>
             </div>
           </div>
         </article>
+
         <article className="panel mixes" id="mixes">
           <div className="panel-head">
-            <h2>Recent Mixes</h2>
-            <a href="#booking">View All →</a>
+            <h2>Mix room pulse</h2>
+            <a href="#booking">Listen on request →</a>
           </div>
           <div className="mix-card">
-            <div className="cover">VOL. 6</div>
+            <div className="cover">VI VOL. 6</div>
             <button aria-label="Play preview" type="button">
               ▶
             </button>
             <div className="wave" />
             <div>
-              <strong>Island Girls Love R&B Vol. 6</strong>
-              <a href="#booking">Listen Now →</a>
+              <strong>Island Girls Love R&amp;B</strong>
+              <p>Dark, warm, and dance-floor ready.</p>
             </div>
           </div>
         </article>
+
         <article className="panel booking" id="booking">
-          <div id="contact" />
-          <h2>Booking Details</h2>
-          <ul>
+          <h2>Booking details</h2>
+          <ul id="contact">
             {bookingDetails.map((detail) => (
               <li key={detail}>{detail}</li>
             ))}
           </ul>
-          <a href={mailtoHref}>Contact Booking Concierge →</a>
+          <a href={mailtoHref}>Open booking draft →</a>
         </article>
       </section>
     </main>
   );
 }
+
+
+

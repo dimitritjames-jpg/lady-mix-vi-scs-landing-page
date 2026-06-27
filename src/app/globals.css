@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&family=Playfair+Display:wght@600;700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&family=Playfair+Display:wght@600;700&display=swap");
 
 :root {
   --bg: #05010a;
@@ -226,7 +226,7 @@ a:focus-visible {
 .hero {
   position: relative;
   z-index: 8;
-  min-height: 760px;
+  min-height: 780px;
   display: grid;
   place-items: center;
   padding: 2.8rem clamp(1rem, 3vw, 3rem) 2.4rem;
@@ -951,11 +951,71 @@ h1 em {
 }
 
 .booking li::before {
-  content: "•";
+  content: "â€¢";
   color: var(--pink);
   margin-right: 0.55rem;
 }
 
+
+.hero-copy {
+  position: absolute;
+  z-index: 5;
+  left: clamp(1rem, 3vw, 3rem);
+  top: 12rem;
+  max-width: 26rem;
+  pointer-events: none;
+}
+
+.hero-copy .kicker {
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.hero-statement {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.9rem, 1.9vw, 1.2rem);
+  color: var(--muted);
+  max-width: 22rem;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.hero-role {
+  margin: 0.2rem 0 0.7rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 236, 247, 0.8);
+}
+
+.assistant-hint {
+  margin: 0.65rem 0 0.1rem;
+  color: rgba(255, 230, 246, 0.72);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.quick-mail {
+  margin: 0.6rem 0 0;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: min(31.8rem, 100%);
+  min-height: 2.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 236, 247, 0.24);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  color: rgba(255, 236, 247, 0.86);
+  background: rgba(17, 8, 18, 0.42);
+}
+
+.mix-card p {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 236, 247, 0.72);
+}
 @keyframes drift {
   0% {
     transform: translateY(0) rotate(0deg);
@@ -1093,3 +1153,4 @@ h1 em {
     display: none;
   }
 }
+

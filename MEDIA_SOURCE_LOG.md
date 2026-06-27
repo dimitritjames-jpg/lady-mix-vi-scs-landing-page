@@ -1,22 +1,28 @@
-# MEDIA_SOURCE_LOG
+﻿# MEDIA_SOURCE_LOG
 
-## Current slot status and source decisions
+## Status date
+- **Finalized:** 2026-06-27
+- **Booking email:** `ladymixvi@gmail.com`
 
-| File name | Source URL | Intended Site Slot | Approval Status | Notes |
-| --- | --- | --- | --- | --- |
-| `public/media/lady-mix/<hero-portrait>.jpg` | Not added | Hero portrait / featured DJ visual | Needs approval / manual export | No approved source asset downloaded yet; generated/CSS visual panel remains in place. |
-| `public/media/lady-mix/<floating-nightlife-panel>.jpg` | Not added | Floating nightlife/event panel | Needs approval / manual export | No approved source asset downloaded yet; generated/CSS visual panel remains in place. |
-| `public/media/lady-mix/<island-girls-panel>.jpg` | Not added | Island Girls Love R&B event panel | Needs approval / manual export | No approved source asset downloaded yet; generated/CSS visual panel remains in place. |
-| `public/media/lady-mix/<mix-media-panel>.jpg` | Not added | Mix/media panel | Needs approval / manual export | No approved source asset downloaded yet; generated/CSS visual panel remains in place. |
-| `public/media/lady-mix/<gallery-preview>.jpg` | Not added | Gallery / event preview area | Needs approval / manual export | No approved source asset downloaded yet; generated/CSS visual panel remains in place. |
-| `public/media/lady-mix/lady-mix-ig-official-feed.jpg` | https://www.instagram.com/ladymixvi/ | Reference only (approved-source audit candidate) | Needs approval / manual export | If official post images are granted, export directly from artist account and replace one panel at a time. |
-| `public/media/lady-mix/lady-mix-fb-official-feed.jpg` | https://www.facebook.com/ladymixvi/ | Reference only (approved-source audit candidate) | Needs approval / manual export | If official post images are granted, export directly from artist account and replace one panel at a time. |
+## Slot map and placement status
 
-## Production media placement rule
-- Always use approved official assets only (official IG/Facebook posts from `@ladymixvi` / Lady Mix VI Facebook).
-- If any source cannot be safely pulled, keep generated/CSS panel and keep this log entry as `needs approval/manual export`.
-- Never add unrelated artists, repost accounts, or questionable media.
+| Slot | File name | Source URL | Source type | Asset used | Approval status | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Hero portrait / featured DJ visual | `public/media/lady-mix/<hero-portrait>` | https://www.instagram.com/ladymixvi/ | official Lady Mix VI | Not yet placed (placeholder) | Needs approval/manual export | Keep the current premium abstract/fallback visual until artist-approved portrait export is provided. |
+| Floating nightlife/event panel | `public/media/atmosphere/nightlife-aura.jpg` | https://images.unsplash.com/photo-1764510378335-865951ed4539?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400 | safe web/stock atmosphere | `public/media/atmosphere/nightlife-aura.jpg` (used for slot) | Approved to use as atmosphere | Do not claim identity in copy or labels. |
+| Island Girls Love R&B panel | `public/media/lady-mix/<island-girls-panel>` | https://www.instagram.com/ladymixvi/ | official Lady Mix VI (required identity slot) | Not yet placed (placeholder) | Needs approval/manual export | Must use official Lady Mix VI export from profile/posts before identity placement. |
+| Mix/media panel | `public/media/atmosphere/dj-gear-nightlife.jpg` | https://images.unsplash.com/photo-1761426202777-520917882f0a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400 | safe web/stock atmosphere | `public/media/atmosphere/dj-gear-nightlife.jpg` | Approved to use as atmosphere | Fine as non-identity audio/booth environment visual. |
+| Gallery/event preview | `public/media/atmosphere/nightlife-aura.jpg` | https://images.unsplash.com/photo-1764510378335-865951ed4539?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=2400 | safe web/stock atmosphere | `public/media/atmosphere/nightlife-aura.jpg` (fallback) | Approved to use as atmosphere | Replace with Lady Mix VI event preview media when provided. |
+| Floating party/energy panel (`friends`, `crowd`, `mixer` classes) | `public/media/atmosphere/nightlife-aura.jpg`, `/dj-gear-nightlife.jpg` | Mix of unsplash sources above | safe web/stock atmosphere | Atmospheric files | Approved to use as atmosphere | Keep identity neutral until official media is exported.
 
-## Notes for future client-provided media
-- If client provides exports, place them under `public/media/lady-mix/` and wire them in `src/data/site.ts` (`floatingMedia[].mediaSrc`) by slot.
-- Keep `MEDIA_SOURCE_LOG.md` updated with exact source URL and replacement date.
+## Approved rule
+- **Hero portrait and Island Girls identity panel** stay as placeholders pending official exports.
+- All other visuals are intentionally atmospheric and are not presented as Lady Mix VI face-of-brand proof.
+- No unrelated repost artists or random brand/client logos are used.
+
+## Next media actions
+1. Export final hero portrait and Island Girls identity slot from official sources and place them at:
+   - `public/media/lady-mix/lady-mix-hero-portrait.jpg`
+   - `public/media/lady-mix/island-girls-love-rnb-panel.jpg`
+2. Update `src/data/site.ts` `floatingMedia[].mediaSrc`, `source`, and `sourceType` for corresponding slots.
+3. Keep this log current after every replacement.
